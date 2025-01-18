@@ -17,19 +17,9 @@ FLAGS  = $(STD) $(WARN) -Os -flto -s -ffunction-sections -fdata-sections -fvisib
 CFLAGS = $(FLAGS) -march=native
 RFLAGS = $(FLAGS) -static
 
-# Use pext if supported and not a ryzen 1/2 cpu
-PROPS = $(shell echo | $(CC) -march=native -E -dM -)
-ifneq ($(findstring __BMI2__, $(PROPS)),)
-	ifeq ($(findstring __znver1, $(PROPS)),)
-		ifeq ($(findstring __znver2, $(PROPS)),)
-			CFLAGS += -DUSE_PEXT
-		endif
-	endif
-endif
-
 # Targets
 basic: clean
 	$(CC) $(CFLAGS) $(NDEBUG) $(SRC) $(LIBS) -Wl,--gc-sections -Wl,--strip-all -Wl,--as-needed -o $(EXE)
 
 clean:
-	@$(RM) -f $(EXE)
+	@rm -f $(EXE)
